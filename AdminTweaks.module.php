@@ -36,7 +36,7 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
     return [
       'title' => 'Admin Tweaks',
       'summary' => 'Small tweaks for the ProcessWire admin, each enabled on its own.',
-      'version' => '1.1.0',
+      'version' => '1.1.1',
       'author' => 'Adrian Jones',
       'autoload' => 'template=admin',
       'singular' => true,

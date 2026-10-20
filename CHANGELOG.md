@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- ColumnBreak: the columns meet edge to edge, like ProcessWire's own side-by-side fields, with no gap and no offset at the top. The divider is a grab area over the shared border, which shows a thin line on hover and while dragging.
+
 ## 1.1.0
 
 - A setting puts each CSS and JS file's modification time in its name (`Name.1792537113.js`) instead of `?v=`, for CDNs that ignore query strings. It needs a rewrite rule in `.htaccess`, given in the setting and the README.

@@ -1,20 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    var gutterSize = 20;
     var minSize = 250;
     var left = document.querySelector('.aos_col_left');
     var right = left ? left.parentNode.querySelector('.aos_col_left ~ .aos_col_right') : null;
     var gutter = null;
     var storageName, defaultSizes;
 
+    // the columns meet edge to edge, like ProcessWire's own side-by-side fields; the gutter
+    // between them takes no width, only a grab area over the shared border
     function setSizes(sizes) {
-        left.style.width = 'calc(' + sizes[0] + '% - ' + (gutterSize / 2) + 'px)';
-        right.style.width = 'calc(' + sizes[1] + '% - ' + (gutterSize / 2) + 'px)';
+        left.style.width = sizes[0] + '%';
+        right.style.width = sizes[1] + '%';
     }
 
     function getSizes() {
-        var total = left.offsetWidth + right.offsetWidth + gutterSize;
-        var first = (left.offsetWidth + gutterSize / 2) / total * 100;
+        var first = left.offsetWidth / (left.offsetWidth + right.offsetWidth) * 100;
         return [first, 100 - first];
     }
 
@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         gutter = document.createElement('div');
         gutter.className = 'gutter gutter-horizontal';
-        gutter.style.width = gutterSize + 'px';
         left.after(gutter);
         setSizes(readSizes());
 
@@ -58,17 +57,19 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             var startX = e.clientX;
             var startLeft = left.getBoundingClientRect().width;
-            var total = startLeft + right.getBoundingClientRect().width + gutterSize;
+            var total = startLeft + right.getBoundingClientRect().width;
             gutter.setPointerCapture(e.pointerId);
+            gutter.classList.add('dragging');
             document.body.style.userSelect = 'none';
 
             function move(e) {
-                var width = Math.min(Math.max(startLeft + e.clientX - startX, minSize), total - gutterSize - minSize);
-                var first = (width + gutterSize / 2) / total * 100;
+                var width = Math.min(Math.max(startLeft + e.clientX - startX, minSize), total - minSize);
+                var first = width / total * 100;
                 setSizes([first, 100 - first]);
             }
 
             function end() {
+                gutter.classList.remove('dragging');
                 gutter.removeEventListener('pointermove', move);
                 gutter.removeEventListener('pointerup', end);
                 gutter.removeEventListener('pointercancel', end);

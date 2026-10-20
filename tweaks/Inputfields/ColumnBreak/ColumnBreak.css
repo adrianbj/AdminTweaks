@@ -12,7 +12,6 @@
 
 .aos_col_right {
     width: 33%;
-    margin-left: -1px !important;
 }
 
 /*hide aos_column_break field*/
@@ -43,20 +42,25 @@ html .Inputfields:before, html .Inputfields:after {
 html .Inputfields:after {
     clear: both;
 }
+/* no width of its own: a grab area centred on the border the two columns share */
 html .gutter {
-    cursor: ew-resize;
-    touch-action: none;
     float: left;
+    width: 0;
     min-height: 200px;
     position: relative;
     z-index: 300;
 }
-html .gutter:active:before {
+html .gutter::after {
     content: "";
-    position: fixed;
-    left: 0;
+    position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
-    background: transparent;
+    left: -5px;
+    width: 10px;
+    cursor: ew-resize;
+    touch-action: none;
+}
+html .gutter:hover::after,
+html .gutter.dragging::after {
+    background: linear-gradient(to right, transparent 4px, #3eb998 4px, #3eb998 6px, transparent 6px);
 }
