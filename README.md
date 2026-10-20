@@ -1,6 +1,8 @@
 # AdminTweaks
 
-Small tweaks for the ProcessWire admin, each enabled on its own in the module's settings.
+Small tweaks for the ProcessWire admin, each enabled on its own in the module's settings, where they're grouped by folder.
+
+Installing enables every bundled tweak; turn off the ones you don't want. ColumnBreak creates an `aos_column_break` field the first time it runs, and NonSuperuserTrash gives users who aren't superusers a Trash action.
 
 Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernhard Baumrock, which built on AdminOnSteroids by Roland Toth. Most of the tweaks here come from AdminOnSteroids, and each one credits its author in its settings.
 
@@ -54,7 +56,7 @@ A tweak that throws an error is skipped and logged in the `admin-tweaks` log, an
 
 ## Switching from RockAdminTweaks
 
-1. Install AdminTweaks. It copies the tweaks enabled in RockAdminTweaks, but runs none of them while RockAdminTweaks is installed.
+1. Install AdminTweaks. It copies the tweaks enabled in RockAdminTweaks, instead of enabling every tweak, and runs none of them while RockAdminTweaks is installed.
 2. Uninstall RockAdminTweaks.
 
 Site tweaks in `site/templates/RockAdminTweaks/` keep working as they are. To move one, put it in `site/templates/AdminTweaks/` and change its namespace from `RockAdminTweaks` to `AdminTweaks`.

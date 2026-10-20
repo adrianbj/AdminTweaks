@@ -55,6 +55,11 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
   {
     $this->wire()->classLoader->addNamespace('AdminTweaks', __DIR__ . '/classes/');
 
+    // The settings form has a checkbox field per folder; they are saved as enabledTweaks.
+    if ($this->wire()->input->post('submit_save_module')) {
+      $this->addHookBefore('Modules::saveConfig', $this, 'hookSaveConfig');
+    }
+
     // With RockAdminTweaks still installed, both modules would run the same tweaks.
     if ($this->wire()->modules->isInstalled(self::legacyModule)) {
       if ($this->wire()->user->isSuperuser()) {
@@ -182,10 +187,37 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
     if ($this->wire()->user->isSuperuser()) $this->error("$key: $message");
   }
 
+  /**
+   * Merge the settings form's folder fields (tweaks_<Folder>) into enabledTweaks
+   */
+  public function hookSaveConfig(HookEvent $event): void
+  {
+    $class = $event->arguments(0);
+    if ((is_object($class) ? $class->className() : (string) $class) !== $this->className()) return;
+    $data = $event->arguments(1);
+    if (!is_array($data)) return;
+    $enabled = null;
+    foreach ($data as $name => $value) {
+      if (!str_starts_with((string) $name, 'tweaks_')) continue;
+      $enabled = array_merge($enabled ?? [], (array) $value);
+      unset($data[$name]);
+    }
+    if ($enabled === null) return;
+    $data['enabledTweaks'] = array_values($enabled);
+    $event->arguments(1, $data);
+  }
+
+  /**
+   * Enables every bundled tweak, or the tweaks enabled in RockAdminTweaks when it is installed
+   */
   public function ___install()
   {
     $modules = $this->wire()->modules;
-    if (!$modules->isInstalled(self::legacyModule)) return;
+    if (!$modules->isInstalled(self::legacyModule)) {
+      $bundled = array_filter($this->availableTweaks(), fn($file) => str_starts_with($file, __DIR__ . '/tweaks/'));
+      $modules->saveConfig($this, 'enabledTweaks', array_keys($bundled));
+      return;
+    }
     $enabled = array_values((array) ($modules->getConfig(self::legacyModule, 'enabledTweaks') ?: []));
     $modules->saveConfig($this, 'enabledTweaks', $enabled);
     $this->message($this->_('Enabled tweaks copied from RockAdminTweaks:') . ' ' . count($enabled) . '. ' . $this->_('Uninstall RockAdminTweaks to start them.'));
@@ -195,18 +227,29 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
   {
     $sanitizer = $this->wire()->sanitizer;
 
-    /** @var InputfieldCheckboxes $f */
-    $f = $this->wire()->modules->get('InputfieldCheckboxes');
-    $f->attr('name', 'enabledTweaks');
-    $f->label = $this->_('Tweaks');
-    $f->icon = 'magic';
-    $f->entityEncodeText = false;
-    $f->notes = $this->_('Site tweaks go in') . ' ' . $this->wire()->config->urls->templates . 'AdminTweaks/' . ' ' . $this->_('as Folder/Name/Name.php, with a class Name extending AdminTweaks\Tweak in the namespace AdminTweaks.');
+    /** @var InputfieldFieldset $fieldset */
+    $fieldset = $this->wire()->modules->get('InputfieldFieldset');
+    $fieldset->label = $this->_('Tweaks');
+    $fieldset->icon = 'magic';
+    $fieldset->notes = $this->_('Site tweaks go in') . ' ' . $this->wire()->config->urls->templates . 'AdminTweaks/' . ' ' . $this->_('as Folder/Name/Name.php, with a class Name extending AdminTweaks\Tweak in the namespace AdminTweaks.');
+    $inputfields->add($fieldset);
 
+    $folders = [];
     foreach ($this->availableTweaks() as $key => $file) {
       [$folder, $name] = explode(':', $key);
+      if (!isset($folders[$folder])) {
+        /** @var InputfieldCheckboxes $f */
+        $f = $this->wire()->modules->get('InputfieldCheckboxes');
+        $f->attr('name', "tweaks_$folder");
+        $f->label = $folder;
+        $f->icon = 'folder-open-o';
+        $f->entityEncodeText = false;
+        $f->attr('value', array_values(array_filter($this->enabledTweaks, fn($k) => str_starts_with((string) $k, "$folder:"))));
+        $fieldset->add($f);
+        $folders[$folder] = $f;
+      }
       $tweak = $this->tweaks[$key] ?? $this->loadTweak($key);
-      $label = "<strong>" . $sanitizer->entities("$folder › $name") . "</strong>";
+      $label = "<strong>" . $sanitizer->entities($name) . "</strong>";
       if ($tweak) {
         $info = $tweak->info;
         $label .= ' – ' . $sanitizer->entities((string) $info->description);
@@ -223,11 +266,8 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
       } else {
         $label .= ' – <span class="uk-text-danger">' . $this->_('fails to load, see the admin-tweaks log') . '</span>';
       }
-      $f->addOption($key, $label);
+      $folders[$folder]->addOption($key, $label);
     }
-
-    $f->attr('value', array_values($this->enabledTweaks));
-    $inputfields->add($f);
 
     if (is_dir($this->wire()->config->paths->templates . self::legacyModule)) {
       $inputfields->add([
