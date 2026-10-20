@@ -8,8 +8,6 @@ namespace AdminTweaks;
 class PageListSelectUnselectRestore extends Tweak
 {
 
-    public $editedPage = false;
-
     public function info(): array
     {
         return [
@@ -21,10 +19,6 @@ class PageListSelectUnselectRestore extends Tweak
 
     public function ready(): void
     {
-
-        $this->loadJS();
-        $this->loadCSS();
-
         $this->addHookAfter('InputfieldPageListSelect::render', $this, 'addPageListUnselectButtons');
     }
 
@@ -32,7 +26,8 @@ class PageListSelectUnselectRestore extends Tweak
     {
         $field = $event->object;
 
-        $originalTitle = ($field->value && $this->pages->get($field->value)) ? $this->wire('sanitizer')->entities($this->pages->get($field->value)->title) : '';
+        $original = $field->value ? $this->pages->get($field->value) : null;
+        $originalTitle = $original && $original->id ? $this->wire('sanitizer')->entities($original->title) : '';
 
         $restoreTitleTag = $originalTitle && strlen($originalTitle) ? 'title="' . \ProcessWire\__('Restore', __FILE__) . ' &quot;' . $originalTitle . '&quot;"' : '';
 
@@ -41,5 +36,6 @@ class PageListSelectUnselectRestore extends Tweak
         $restoreButton = $field->value ? '<button class="aos_pagelist_unselect restore ui-button initial" ' . $restoreTitleTag . ' data-title-original="' . $originalTitle . '" data-value-original="' . $field->value . '" ><i class="fa fa-undo"></i></button>' : '';
 
         $event->return = $restoreButton . $clearButton . $event->return;
+        $this->addAssets($event);
     }
 }

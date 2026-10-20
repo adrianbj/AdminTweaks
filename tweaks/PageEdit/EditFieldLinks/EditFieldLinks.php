@@ -4,15 +4,12 @@ namespace AdminTweaks;
 
 use ProcessWire\InputfieldCheckbox;
 use ProcessWire\InputfieldRepeater;
-use ProcessWire\RepeaterPage;
 
 /**
  * Originally from AdminOnSteroids by RolandToth (tpr)
  */
 class EditFieldLinks extends Tweak
 {
-
-    public $editedPage = false;
 
     public function info(): array
     {
@@ -28,14 +25,11 @@ class EditFieldLinks extends Tweak
 
         if ($this->wire('user')->isSuperuser()) {
 
-            $editedPageId = $this->wire('sanitizer')->int($this->wire('input')->get->id);
-            $editedPage = $this->wire('pages')->get($editedPageId);
+            // editing a page, user, role or permission
+            $editing = in_array((string) $this->wire('page')->process, ['ProcessPageEdit', 'ProcessUser', 'ProcessRole', 'ProcessPermission'])
+                && $this->wire('input')->get->id;
 
-            if ($editedPage->id && !($editedPage instanceof RepeaterPage)) {
-                $this->editedPage = $editedPage;
-            }
-
-            if ($this->editedPage) {
+            if ($editing) {
 
                 $this->addHookAfter('Inputfield::render', $this, 'addFieldEditLinks');
                 $this->addHookAfter('Inputfield::renderValue', $this, 'addFieldEditLinks');

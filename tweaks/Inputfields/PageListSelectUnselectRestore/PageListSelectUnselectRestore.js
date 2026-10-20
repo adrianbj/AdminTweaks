@@ -1,3 +1,9 @@
+// Loaded with the first page select, so it can arrive more than once (in ajax-loaded repeater
+// items, for example); the listeners are on the document, so they go on only once.
+(function () {
+if (window.AdminTweaksPageListSelectUnselectRestore) return;
+window.AdminTweaksPageListSelectUnselectRestore = true;
+
 // pageSelected is a jQuery event from ProcessWire's PageListSelect, which native listeners
 // can't receive
 if (window.jQuery) {
@@ -48,3 +54,4 @@ document.addEventListener('click', function (e) {
     // allow dependent fields to update
     input.dispatchEvent(new Event('change', { bubbles: true }));
 });
+})();

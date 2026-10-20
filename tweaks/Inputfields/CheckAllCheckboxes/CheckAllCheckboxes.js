@@ -1,4 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
+// Loaded with the first checkboxes field, so it can arrive after the page has loaded (in an
+// ajax-loaded repeater item, for example) and more than once
+(function (init) {
+    if (window.AdminTweaksCheckAllCheckboxes) return;
+    window.AdminTweaksCheckAllCheckboxes = true;
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})(function () {
 
     var selector = '.InputfieldCheckboxes ul[class*="InputfieldCheckboxes"]';
 

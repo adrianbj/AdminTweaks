@@ -24,19 +24,20 @@ class PrevNextPage extends Tweak
             return;
         }
 
+        // only when editing a page, user, or role
+        if (!in_array((string) $this->wire('page')->process, ['ProcessPageEdit', 'ProcessUser', 'ProcessRole'])) {
+            return;
+        }
+
         $this->editedPage = false;
         $editedPageId = $this->wire('sanitizer')->int($this->wire('input')->get->id);
-        $editedPage = $this->wire('pages')->get($editedPageId);
+        $editedPage = $editedPageId ? $this->wire('pages')->get($editedPageId) : null;
 
-        if ($editedPage->id && !($editedPage instanceof RepeaterPage)) {
+        if ($editedPage && $editedPage->id && !($editedPage instanceof RepeaterPage)) {
             $this->editedPage = $editedPage;
         }
 
-        if (
-            in_array($this->wire('page')->process, ['ProcessPageEdit', 'ProcessUser', 'ProcessRole'])
-            && $this->wire('input')->id
-            && $this->editedPage
-        ) {
+        if ($this->editedPage) {
             // sort precedence: template level - page level - "sort"
             $sortfield = 'sort';
             $parent = $this->editedPage->parent();

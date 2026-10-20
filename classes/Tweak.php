@@ -2,6 +2,7 @@
 
 namespace AdminTweaks;
 
+use ProcessWire\HookEvent;
 use ProcessWire\Paths;
 use ProcessWire\Wire;
 use ProcessWire\WireData;
@@ -47,6 +48,12 @@ abstract class Tweak extends Wire
    */
   public $name;
 
+  /**
+   * Whether addAssets() has run in this request
+   * @var bool
+   */
+  private $assetsAdded = false;
+
   public function __construct($key)
   {
     $this->info = new WireData();
@@ -80,6 +87,28 @@ abstract class Tweak extends Wire
   public function loadJS(): void
   {
     wire()->config->scripts->add($this->pathToUrl(substr($this->file, 0, -3) . 'js', true));
+  }
+
+  /**
+   * Load the tweak's CSS and JS from a hook on the markup that uses them, so that admin pages
+   * without that markup don't load them. In an ajax request, such as a repeater item loading,
+   * the page's head has already been sent, so the tags go at the start of the markup instead.
+   * The tweak's JS must then be safe to run twice.
+   */
+  public function addAssets(HookEvent $event, bool $css = true, bool $js = true): void
+  {
+    if ($this->assetsAdded) return;
+    $this->assetsAdded = true;
+    if (!wire()->config->ajax) {
+      if ($css) $this->loadCSS();
+      if ($js) $this->loadJS();
+      return;
+    }
+    $base = substr($this->file, 0, -3);
+    $tags = '';
+    if ($css) $tags .= "<link rel='stylesheet' href='" . $this->pathToUrl($base . 'css', true) . "'>";
+    if ($js) $tags .= "<script src='" . $this->pathToUrl($base . 'js', true) . "'></script>";
+    $event->return = $tags . $event->return;
   }
 
   /**

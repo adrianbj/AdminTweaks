@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- AsmSearchBox, CheckAllCheckboxes, ColumnBreak, and PageListSelectUnselectRestore load their CSS and JS only on admin pages with the fields they change, instead of on every admin page. `Tweak::addAssets()` loads a tweak's files from a render hook; in an ajax request, such as a repeater item loading, it puts the tags in the markup.
+- BypassTrash, ColumnBreak, EditFieldLinks, and PrevNextPage no longer load the page named by `?id=` on every admin request; they use the page being edited, only when one is.
+- NonSuperuserTrash: the Trash action asks for confirmation, as BypassTrash's Delete does. It had none, because the confirmation script only loaded for superusers.
+
 ## 1.1.2
 
 - ColumnBreak's divider line, CheckAllCheckboxes' button, and AsmSearchBox's highlighted result use the admin theme's main color (`--pw-main-color`) instead of a fixed green; the highlighted result is a tint of it, so its text stays readable.

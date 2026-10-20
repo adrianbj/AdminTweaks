@@ -25,6 +25,17 @@ class NonSuperuserTrash extends Tweak
     public function ready(): void
     {
         if (!$this->wire->user->isSuperuser()) {
+            // the same press-to-confirm, then cancel or confirm, as BypassTrash's Delete action
+            $this->wire->addHookBefore('ProcessPageList::execute', function () {
+                $this->wire('config')->js('AOS_BypassTrash', [
+                    'str_cancel' => $this->_('Cancel'),
+                    'str_confirm' => $this->_('Trash'),
+                ]);
+                $confirm = dirname(__DIR__, 2) . '/General/BypassTrash/BypassTrash';
+                $this->wire('config')->styles->add($this->pathToUrl("$confirm.css", true));
+                $this->wire('config')->scripts->add($this->pathToUrl("$confirm.js", true));
+            });
+
             $this->addHookAfter('ProcessPageListActions::getExtraActions', function (HookEvent $event) {
                 $page = $event->arguments(0);
                 $extras = $event->return;

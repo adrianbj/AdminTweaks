@@ -4,11 +4,9 @@ namespace AdminTweaks;
 
 use ProcessWire\HookEvent;
 use ProcessWire\Inputfield;
-use ProcessWire\RepeaterPage;
 
 class BypassTrash extends Tweak
 {
-    private $editedPage;
     private $strings;
 
 
@@ -50,14 +48,6 @@ class BypassTrash extends Tweak
             $this->loadCSS();
             $this->loadJS();
         });
-
-        $this->editedPage = false;
-        $editedPageId = $this->wire('sanitizer')->int($this->wire('input')->get->id);
-        $editedPage = $this->wire('pages')->get($editedPageId);
-
-        if ($editedPage->id && !($editedPage instanceof RepeaterPage)) {
-            $this->editedPage = $editedPage;
-        }
     }
 
 
@@ -127,7 +117,8 @@ class BypassTrash extends Tweak
 
     public function addDeletePermanentlyField(HookEvent $event)
     {
-        if ($this->editedPage && !$this->editedPage->trashable()) {
+        $editedPage = $event->object->getPage();
+        if ($editedPage->id && !$editedPage->trashable()) {
             return false;
         }
 

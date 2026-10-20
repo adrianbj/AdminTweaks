@@ -8,8 +8,6 @@ namespace AdminTweaks;
 class AsmSearchBox extends Tweak
 {
 
-    public $editedPage = false;
-
     public function info(): array
     {
         return [
@@ -21,9 +19,6 @@ class AsmSearchBox extends Tweak
 
     public function ready(): void
     {
-        $this->loadJS();
-        $this->loadCSS();
-
         $this->addHookAfter('InputfieldAsmSelect::render', $this, 'addAsmSelectBox');
 
     }
@@ -41,6 +36,7 @@ class AsmSearchBox extends Tweak
         $script = "<script>initAsmSelectBox('$id');</script>";
 
         $event->return .= $script;
+        $this->addAssets($event);
     }
 
 }

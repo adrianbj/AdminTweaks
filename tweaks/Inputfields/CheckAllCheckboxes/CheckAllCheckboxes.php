@@ -18,7 +18,6 @@ class CheckAllCheckboxes extends Tweak
 
     public function ready(): void
     {
-        $this->loadJS();
-        $this->loadCSS();
+        $this->addHookAfter('InputfieldCheckboxes::render', $this, 'addAssets');
     }
 }

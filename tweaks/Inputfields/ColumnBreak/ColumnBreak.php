@@ -2,15 +2,12 @@
 
 namespace AdminTweaks;
 
-use ProcessWire\RepeaterPage;
 
 /**
  * Originally from AdminOnSteroids by RolandToth (tpr)
  */
 class ColumnBreak extends Tweak
 {
-
-    public $editedPage = false;
 
     public function info(): array
     {
@@ -38,15 +35,13 @@ class ColumnBreak extends Tweak
             $this->message(\ProcessWire\__('Installed field "aos_column_break".', __FILE__));
         }
 
-        $editedPageId = $this->wire('sanitizer')->int($this->wire('input')->get->id);
-        $editedPage = $this->wire('pages')->get($editedPageId);
-
-        if ($editedPage->id && !($editedPage instanceof RepeaterPage)) {
-            $this->editedPage = $editedPage;
-        }
-
         $this->addHookAfter('ProcessPageEdit::buildFormContent', $this, 'setupAdminColumns');
+    }
 
+    // the page edit form is built before the page's head, so the assets can join it
+    protected function loadAssets()
+    {
+        if ($this->wire()->config->ajax) return;
         $this->loadCSS();
         $this->loadJS();
     }
@@ -59,8 +54,8 @@ class ColumnBreak extends Tweak
         $colWidths = array(67, 33);
         $tabOpenFields = $fields->find('hasFieldtype=FieldtypeFieldsetTabOpen');
 
-        if ($tabOpenFields->count()) {
-            $this->setupAdminColumnsTabs($tabOpenFields, $form);
+        if ($tabOpenFields->count() && $this->setupAdminColumnsTabs($tabOpenFields, $form)) {
+            $this->loadAssets();
         }
 
         if (!$colBreakField) {
@@ -111,7 +106,7 @@ class ColumnBreak extends Tweak
 
         // add template name and user id for the splitter's saved sizes
         $fsetRight->wrapAttr('data-splitter-storagekey',
-            'splitter_' . $this->editedPage->template->name . '_' . $this->wire('user')->id);
+            'splitter_' . $event->object->getPage()->template->name . '_' . $this->wire('user')->id);
 
         $this->wire('modules')->get('FieldtypeFieldsetClose');
         $fsetLeftEnd = new \ProcessWire\InputfieldFieldsetClose;
@@ -147,6 +142,8 @@ class ColumnBreak extends Tweak
 
         $form->add($fsetRight);
         $form->add($fsetRightEnd);
+
+        $this->loadAssets();
     }
 
     public function setupAdminColumnsTabs($fields, $form)
@@ -181,9 +178,9 @@ class ColumnBreak extends Tweak
             }
         }
 
-        if (!empty($dataColumnBreaks)) {
-            $form->wrapAttr('data-column-break', json_encode($dataColumnBreaks));
-        }
+        if (empty($dataColumnBreaks)) return false;
+        $form->wrapAttr('data-column-break', json_encode($dataColumnBreaks));
+        return true;
     }
 
 }
