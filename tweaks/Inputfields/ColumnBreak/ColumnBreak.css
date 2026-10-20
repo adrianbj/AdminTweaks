@@ -62,5 +62,5 @@ html .gutter::after {
 }
 html .gutter:hover::after,
 html .gutter.dragging::after {
-    background: linear-gradient(to right, transparent 4px, #3eb998 4px, #3eb998 6px, transparent 6px);
+    background: linear-gradient(to right, transparent 4px, var(--pw-main-color, #3eb998) 4px, var(--pw-main-color, #3eb998) 6px, transparent 6px);
 }

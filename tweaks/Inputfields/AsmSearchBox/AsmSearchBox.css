@@ -42,10 +42,11 @@
   cursor: pointer;
 }
 
+/* a tint of the admin theme's main color, so the text stays readable whatever that color is */
 .AsmSearchBox-option.active,
 .AsmSearchBox-option:not(.disabled):hover {
-  background: #3eb998;
-  color: #fff;
+  background: rgba(62, 185, 152, 0.25);
+  background: color-mix(in srgb, var(--pw-main-color, #3eb998) 30%, transparent);
 }
 
 .AsmSearchBox-option.disabled {

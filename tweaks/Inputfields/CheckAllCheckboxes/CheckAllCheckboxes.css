@@ -26,11 +26,11 @@
 }
 #checkAllCheckboxes i::before {
     font-size: 0.75rem;
-    color: #3EB998;
+    color: var(--pw-main-color, #3EB998);
     text-shadow: 0 0 2px rgba(255, 255, 255, 0.7);
 }
 #checkAllCheckboxes:hover {
-    background: #3EB998;
+    background: var(--pw-main-color, #3EB998);
 }
 #checkAllCheckboxes:hover i::before {
     color: white;

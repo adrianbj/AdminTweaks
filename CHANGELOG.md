@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- ColumnBreak's divider line, CheckAllCheckboxes' button, and AsmSearchBox's highlighted result use the admin theme's main color (`--pw-main-color`) instead of a fixed green; the highlighted result is a tint of it, so its text stays readable.
+
 ## 1.1.1
 
 - ColumnBreak: the columns meet edge to edge, like ProcessWire's own side-by-side fields, with no gap and no offset at the top. The divider is a grab area over the shared border, which shows a thin line on hover and while dragging.
