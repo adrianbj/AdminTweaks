@@ -18,7 +18,7 @@ class ColumnBreak extends Tweak
         ];
     }
 
-    public function ready(): void
+    public function enable(): void
     {
         // use skipLabel and collapsed to avoid visiblity if tweak is uninstalled (no need to remove from templates)
         if (!$this->wire()->fields->get('aos_column_break')) {
@@ -34,7 +34,10 @@ class ColumnBreak extends Tweak
 
             $this->message(\ProcessWire\__('Installed field "aos_column_break".', __FILE__));
         }
+    }
 
+    public function ready(): void
+    {
         $this->addHookAfter('ProcessPageEdit::buildFormContent', $this, 'setupAdminColumns');
     }
 

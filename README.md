@@ -48,7 +48,7 @@ class Name extends Tweak
 }
 ```
 
-`loadCSS()` and `loadJS()` version the file's URL, as described below. To version it some other way, hook after `AdminTweaks::assetUrl`.
+`enable()` runs once when the tweak is turned on, in the settings or on install, for setup such as a field the tweak adds. `loadCSS()` and `loadJS()` version the file's URL, as described below. To version it some other way, hook after `AdminTweaks::assetUrl`.
 
 ## Versioned CSS and JS
 

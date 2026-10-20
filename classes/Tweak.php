@@ -71,6 +71,14 @@ abstract class Tweak extends Wire
     return [];
   }
 
+  /**
+   * Runs once when the tweak is turned on: in the module's settings, or on install. For setup the
+   * tweak needs, such as a field it adds, so that ready() doesn't have to check for it.
+   */
+  public function enable(): void
+  {
+  }
+
   public function init(): void
   {
   }

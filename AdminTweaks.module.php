@@ -36,7 +36,7 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
     return [
       'title' => 'Admin Tweaks',
       'summary' => 'Small tweaks for the ProcessWire admin, each enabled on its own.',
-      'version' => '1.2.0',
+      'version' => '1.2.1',
       'author' => 'Adrian Jones',
       'autoload' => 'template=admin',
       'singular' => true,
@@ -212,6 +212,18 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
     if ($enabled === null) return;
     $data['enabledTweaks'] = array_values($enabled);
     $event->arguments(1, $data);
+    $this->enableTweaks(array_diff($data['enabledTweaks'], (array) $this->enabledTweaks));
+  }
+
+  /**
+   * Run each tweak's enable(), for tweaks that have just been turned on
+   */
+  protected function enableTweaks(array $keys): void
+  {
+    foreach ($keys as $key) {
+      $tweak = $this->tweaks[$key] ?? $this->loadTweak((string) $key);
+      if ($tweak) $this->run($tweak, 'enable');
+    }
   }
 
   /**
@@ -220,13 +232,16 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
   public function ___install()
   {
     $modules = $this->wire()->modules;
+    $this->wire()->classLoader->addNamespace('AdminTweaks', __DIR__ . '/classes/');
     if (!$modules->isInstalled(self::legacyModule)) {
       $bundled = array_filter($this->availableTweaks(), fn($file) => str_starts_with($file, __DIR__ . '/tweaks/'));
       $modules->saveConfig($this, 'enabledTweaks', array_keys($bundled));
+      $this->enableTweaks(array_keys($bundled));
       return;
     }
     $enabled = array_values((array) ($modules->getConfig(self::legacyModule, 'enabledTweaks') ?: []));
     $modules->saveConfig($this, 'enabledTweaks', $enabled);
+    $this->enableTweaks($enabled);
     $this->message($this->_('Enabled tweaks copied from RockAdminTweaks:') . ' ' . count($enabled) . '. ' . $this->_('Uninstall RockAdminTweaks to start them.'));
   }
 

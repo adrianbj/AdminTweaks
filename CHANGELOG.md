@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- `Tweak::enable()` runs once when a tweak is turned on, in the settings or on install. ColumnBreak creates its `aos_column_break` field there, instead of on whichever admin request came first after the tweak was turned on.
+
 ## 1.2.0
 
 - AsmSearchBox, CheckAllCheckboxes, ColumnBreak, and PageListSelectUnselectRestore load their CSS and JS only on admin pages with the fields they change, instead of on every admin page. `Tweak::addAssets()` loads a tweak's files from a render hook; in an ajax request, such as a repeater item loading, it puts the tags in the markup.
