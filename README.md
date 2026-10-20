@@ -11,7 +11,7 @@ Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernh
 | Tweak | What it does |
 |---|---|
 | General › BypassTrash | Delete buttons in the page list and on the page edit Delete tab that skip the trash, for superusers |
-| Inputfields › AsmSearchBox | A search box in AsmSelect dropdowns |
+| Inputfields › AsmSearchBox | A search box in place of AsmSelect's add dropdown |
 | Inputfields › CheckAllCheckboxes | A button to check or uncheck every checkbox in a field |
 | Inputfields › ColumnBreak | An `aos_column_break` field that splits the page editor into two resizable columns |
 | Inputfields › CopyFieldNames | Shift-click a field's label to copy its name, for superusers |
@@ -63,6 +63,6 @@ Site tweaks in `site/templates/RockAdminTweaks/` keep working as they are. To mo
 
 Tweaks from RockAdminTweaks that aren't included here are left out of the copied settings when the module's settings are next saved.
 
-## jQuery
+## JavaScript
 
-The tweaks don't rely on jQuery Migrate, and avoid the functions jQuery 4 removes. With jQuery 3.7.1 and Migrate's logging on, they log no deprecation warnings. The bundled select2 4.0.6-rc.1 is patched to use native functions in place of `$.trim`, `$.isArray`, `$.isFunction`, and `$.camelCase` (`select2-v4.0.6-jquery4.patch`).
+The tweaks are plain JavaScript with no bundled libraries. They use jQuery only to listen for two events that ProcessWire triggers through jQuery, which native listeners can't receive: `pageSelected` (PageListSelectUnselectRestore) and `wiretabclick` (ColumnBreak, for columns in tabs).

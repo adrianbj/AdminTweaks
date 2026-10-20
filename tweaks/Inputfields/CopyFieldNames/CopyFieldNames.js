@@ -1,22 +1,17 @@
-$(document).ready(function () {
-  // Copy a string to the clipboard
-  function copyToClipboard(string) {
-    navigator.clipboard.writeText(string);
-  }
+// Shift-click a field's label to copy the field's name. The listener runs in the capture phase,
+// so the click never reaches the label's own handler that opens or closes the field.
+document.addEventListener('click', function (e) {
+  if (!e.shiftKey) return;
+  var header = e.target.closest('.InputfieldHeader');
+  if (!header) return;
 
-  // When InputfieldHeader is clicked
-  $(document).on("click", ".InputfieldHeader", function (event) {
-    let text = "";
-    if (!event.shiftKey) return;
+  e.preventDefault();
+  e.stopPropagation();
 
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    text = $(this).attr("for");
-    if (!text) text = $(this).parent().attr("id");
-    text = text.replace(/^Inputfield_|wrap_Inputfield_|wrap_/, "").trim();
-    if (!text) return;
+  var text = header.getAttribute('for') || header.parentNode.id || '';
+  text = text.replace(/^Inputfield_|wrap_Inputfield_|wrap_/, '').trim();
+  if (!text) return;
 
-    copyToClipboard(text);
-    $(this).effect("highlight", {}, 500);
-  });
-});
+  navigator.clipboard.writeText(text);
+  header.animate([{ backgroundColor: '#ffff99' }, { backgroundColor: 'transparent' }], 500);
+}, true);

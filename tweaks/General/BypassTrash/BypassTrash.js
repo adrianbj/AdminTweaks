@@ -1,55 +1,41 @@
-// Delete + non-superuser Trash actions
-// console.log(ProcessWire.config.AOS_BypassTrash);
-$(document).on("mousedown", "a.aos-pagelist-confirm", function (e) {
-    var str_cancel = ProcessWire.config.AOS_BypassTrash.str_cancel;
-    var str_confirm = ProcessWire.config.AOS_BypassTrash.str_confirm;
-
-    // console.log(str_cancel);
-    // console.log(str_confirm);
-
+// Delete + non-superuser Trash actions: the first press turns the link into a confirm link,
+// with a cancel link before it; the confirm link then runs the action as usual.
+document.addEventListener('mousedown', function (e) {
+    var link = e.target.closest('a.aos-pagelist-confirm');
+    if (!link) return;
     e.preventDefault();
-    if (e.which === 3 || e.which === 2) return false;
+    if (e.button !== 0) return;
 
-    var link = $(this),
-        url = link.attr("href"),
-        linkTextDefault;
+    var strings = ProcessWire.config.AOS_BypassTrash;
 
-    if (!link.attr("data-text-original")) {
-        var currentText = $(this).get(0).childNodes[1]
-            ? $(this).get(0).childNodes[1].nodeValue
-            : $(this).html();
-        link.attr("data-text-original", currentText);
-        if (link.hasClass("PageListActionDelete") || link.hasClass("PageDelete")) {
-            link.attr("data-text-confirm", str_confirm);
+    if (!link.hasAttribute('data-text-original')) {
+        var currentText = link.childNodes[1] ? link.childNodes[1].nodeValue : link.innerHTML;
+        link.setAttribute('data-text-original', currentText);
+        if (link.classList.contains('PageListActionDelete') || link.classList.contains('PageDelete')) {
+            link.setAttribute('data-text-confirm', strings.str_confirm);
         }
     }
 
-    if (url.indexOf("&force=1") === -1) {
-        var linkCancel;
-        linkTextDefault = link.attr("data-text-original");
+    // already the confirm link: let the click run the action
+    if (link.getAttribute('href').indexOf('&force=1') !== -1) return;
 
-        if (link.hasClass("cancel")) {
-            linkCancel = link.next("a");
-            linkCancel
-                .removeClass("cancel")
-                .attr("href", link.attr("href").replace("&force=1", ""))
-                .contents()
-                .last()[0].textContent = linkTextDefault;
-            link.replaceWith(linkCancel);
-            return false;
-        }
-
-        linkTextDefault = link.attr("data-text-confirm")
-            ? link.attr("data-text-confirm")
-            : link.attr("data-text-original");
-        linkCancel = link.clone(true);
-        linkCancel.addClass("cancel").contents().last()[0].textContent = " " + str_cancel;
-
-        // replace text only (keep icon)
-        link.contents().last()[0].textContent = linkTextDefault;
-        link.attr("href", link.attr("href") + "&force=1");
-        link.before(linkCancel);
+    if (link.classList.contains('cancel')) {
+        // the cancel link: put the original link back in its place
+        var confirmLink = link.nextElementSibling;
+        if (!confirmLink || confirmLink.tagName !== 'A') return;
+        confirmLink.classList.remove('cancel');
+        confirmLink.setAttribute('href', link.getAttribute('href').replace('&force=1', ''));
+        confirmLink.lastChild.textContent = link.getAttribute('data-text-original');
+        link.replaceWith(confirmLink);
+        return;
     }
 
-    return false;
+    var cancelLink = link.cloneNode(true);
+    cancelLink.classList.add('cancel');
+    cancelLink.lastChild.textContent = ' ' + strings.str_cancel;
+
+    // replace text only (keep icon)
+    link.lastChild.textContent = link.getAttribute('data-text-confirm') || link.getAttribute('data-text-original');
+    link.setAttribute('href', link.getAttribute('href') + '&force=1');
+    link.before(cancelLink);
 });

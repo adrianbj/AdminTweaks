@@ -79,14 +79,14 @@ class PrevNextPage extends Tweak
 
                 if ($prev && $prev->id && $prev->editable()) {
                     $prevnextlinks['prev'] = array(
-                        'title' => $this->wire('sanitizer')->entities($edit_prev_text . ' ' . ($prev->title ? $prev->title : $prev->name)),
+                        'title' => $edit_prev_text . ' ' . ($prev->title ? $prev->title : $prev->name),
                         'url' => $prev->editUrl,
                     );
                 }
 
                 if ($next && $next->id && $next->editable()) {
                     $prevnextlinks['next'] = array(
-                        'title' => $this->wire('sanitizer')->entities($edit_next_text . ' ' . ($next->title ? $next->title : $next->name)),
+                        'title' => $edit_next_text . ' ' . ($next->title ? $next->title : $next->name),
                         'url' => $next->editUrl,
                     );
                 }

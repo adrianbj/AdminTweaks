@@ -1,53 +1,50 @@
-$(document).on('pageSelected', function (e, obj) {
+// pageSelected is a jQuery event from ProcessWire's PageListSelect, which native listeners
+// can't receive
+if (window.jQuery) {
+    window.jQuery(document).on('pageSelected', function (e, obj) {
+        var wrap = obj.a[0].closest('.InputfieldPageListSelect');
+        if (!wrap) return;
+        var clearButton = wrap.querySelector('button.clear');
+        var restoreButton = wrap.querySelector('button.restore');
 
-    var clearButton = obj.a.parents('.InputfieldPageListSelect').first().find('button.clear'),
-        restoreButton = obj.a.parents('.InputfieldPageListSelect').first().find('button.restore');
+        if (clearButton) clearButton.classList.toggle('empty', obj.id === 0);
+        if (restoreButton) restoreButton.classList.remove('empty', 'initial');
+    });
+}
 
-    if (obj.id !== 0) {
-        clearButton.removeClass('empty');
+document.addEventListener('click', function (e) {
+    var button = e.target.closest('.aos_pagelist_unselect');
+    if (!button) return;
+    e.preventDefault();
+
+    var parent = button.parentNode;
+    var input = parent.querySelector('input');
+    var title = parent.querySelector('.PageListSelectName');
+
+    if (button.classList.contains('clear')) {
+        input.removeAttribute('value');
+        input.value = '';
+        if (title) title.textContent = '';
+        button.classList.add('empty');
+        var restore = parent.querySelector('button.restore');
+        if (restore) {
+            if (restore.getAttribute('data-value-original')) restore.classList.remove('empty');
+            restore.classList.remove('initial');
+        }
     } else {
-        clearButton.addClass('empty');
-    }
-
-    restoreButton.removeClass('empty').removeClass('initial');
-});
-
-$(document).on('click', '.aos_pagelist_unselect', function () {
-
-    var button = $(this),
-        parentEl = button.parent(),
-        input = button.parent().find('input'),
-        //titleElem = button.parent().find('.PageListSelectName .label_title');
-        titleElem = button.parent().find('.PageListSelectName');
-
-    // try without .label_title (on pageSelected the span disappears)
-    //if (!titleElem.length) {
-    //    titleElem = button.parent().find('.PageListSelectName');
-    //}
-
-    if (button.hasClass('clear')) {
-        // clear
-        input.removeAttr('value');
-        titleElem.html('');
-        button.addClass('empty');
-
-        parentEl.find('button.restore[data-value-original!=""]').removeClass('empty');
-        parentEl.find('button.restore').removeClass('initial');
-    } else {
-        // restore
-        input.val(button.attr('data-value-original'));
-        titleElem.html(button.attr('data-title-original'));
-        button.addClass('empty');
-        parentEl.find('button.clear').removeClass('empty');
+        input.value = button.getAttribute('data-value-original');
+        if (title) title.textContent = button.getAttribute('data-title-original');
+        button.classList.add('empty');
+        var clear = parent.querySelector('button.clear');
+        if (clear) clear.classList.remove('empty');
     }
 
     // if pagelist is open, close it
-    if (parentEl.find('.PageListItemOpen').length) {
-        parentEl.find('a.PageListSelectActionToggle').trigger('click');
+    if (parent.querySelector('.PageListItemOpen')) {
+        var toggle = parent.querySelector('a.PageListSelectActionToggle');
+        if (toggle) toggle.click();
     }
 
     // allow dependent fields to update
-    input.trigger('change');
-
-    return false;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
 });

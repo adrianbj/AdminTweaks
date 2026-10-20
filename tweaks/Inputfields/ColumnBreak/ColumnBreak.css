@@ -45,6 +45,7 @@ html .Inputfields:after {
 }
 html .gutter {
     cursor: ew-resize;
+    touch-action: none;
     float: left;
     min-height: 200px;
     position: relative;

@@ -16,4 +16,8 @@ First release, from RockAdminTweaks 1.13.1 with 13 of its 21 tweaks.
 - AsmSearchBox: no more errors after choosing or removing an item.
 - PrevNextPage and PageListSelectUnselectRestore: page titles are escaped.
 - BypassTrash: the Delete action checks that the page can be deleted.
-- Works without jQuery Migrate, and avoids the functions jQuery 4 removes.
+- Plain JavaScript, with no bundled libraries:
+  - AsmSearchBox has its own search box in place of select2.
+  - ColumnBreak has its own draggable divider in place of Split.js, and keeps the saved sizes.
+  - PageListSelectUnselectRestore sets the restored title as text, not HTML.
+  - CopyFieldNames uses the Clipboard API.

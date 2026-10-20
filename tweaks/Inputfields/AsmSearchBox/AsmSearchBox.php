@@ -21,10 +21,6 @@ class AsmSearchBox extends Tweak
 
     public function ready(): void
     {
-
-        $this->wire('config')->scripts->add($this->pathToUrl(__DIR__ . '/select2/js/select2.min.js'));
-        $this->wire('config')->styles->add($this->pathToUrl(__DIR__ . '/select2/css/select2.min.css'));
-
         $this->loadJS();
         $this->loadCSS();
 

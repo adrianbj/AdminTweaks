@@ -20,7 +20,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Bundled third-party code keeps its own license: select2 (MIT) in
-tweaks/Inputfields/AsmSearchBox/select2/ and Split.js (MIT) in
-tweaks/Inputfields/ColumnBreak/split.js/.

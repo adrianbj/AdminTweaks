@@ -38,8 +38,6 @@ class ColumnBreak extends Tweak
             $this->message(\ProcessWire\__('Installed field "aos_column_break".', __FILE__));
         }
 
-        $this->wire('config')->scripts->add($this->pathToUrl(__DIR__ . '/split.js/split.min.js'));
-
         $editedPageId = $this->wire('sanitizer')->int($this->wire('input')->get->id);
         $editedPage = $this->wire('pages')->get($editedPageId);
 
@@ -111,7 +109,7 @@ class ColumnBreak extends Tweak
         $fsetRight->wrapAttr('style', 'width: ' . $colWidths[1] . '%');
         $fsetRight->wrapAttr('data-splitter-default', $colWidths[1]);
 
-        // add template name and user id for Split.js
+        // add template name and user id for the splitter's saved sizes
         $fsetRight->wrapAttr('data-splitter-storagekey',
             'splitter_' . $this->editedPage->template->name . '_' . $this->wire('user')->id);
 
