@@ -48,7 +48,15 @@ class Name extends Tweak
 }
 ```
 
-`loadCSS()` and `loadJS()` add a `?v=` version to the URL. To version it another way, for example in the filename for a CDN that ignores query strings, hook after `AdminTweaks::assetUrl`.
+`loadCSS()` and `loadJS()` version the file's URL, as described below. To version it some other way, hook after `AdminTweaks::assetUrl`.
+
+## Versioned CSS and JS
+
+Every tweak's CSS and JS URL carries a version, so browsers fetch a file again after it changes. By default that is a `?v=` query string. A CDN that ignores query strings (CloudFront, by default) keeps serving the old file, so the module's settings can put the file's modification time in its name instead: `ColumnBreak.1792537113.js`. That needs this rule in the site's `.htaccess`, before ProcessWire's own rewrite rules, or every tweak's CSS and JS returns 404:
+
+```
+RewriteRule ^(.+)\.(\d{10,})\.(js|css)$ $1.$3 [L]
+```
 
 ## A tweak that breaks the admin
 

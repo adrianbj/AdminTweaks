@@ -36,7 +36,7 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
     return [
       'title' => 'Admin Tweaks',
       'summary' => 'Small tweaks for the ProcessWire admin, each enabled on its own.',
-      'version' => '1.0.0',
+      'version' => '1.1.0',
       'author' => 'Adrian Jones',
       'autoload' => 'template=admin',
       'singular' => true,
@@ -49,6 +49,7 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
   {
     parent::__construct();
     $this->set('enabledTweaks', []);
+    $this->set('versionFilenames', 0);
   }
 
   public function init()
@@ -89,13 +90,19 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
   /**
    * URL of a tweak's asset file, with a cache-busting version
    *
-   * Hook after this to version the URL some other way, e.g. in the filename for a CDN that
-   * ignores query strings.
+   * The version is ?v=, or with versionFilenames on, the file's modification time in its name
+   * (Name.1792537113.js), which a rewrite rule maps back to the file. A CDN that ignores query
+   * strings only sees a new file under a new name.
    */
   public function ___assetUrl(string $file): string
   {
     $config = $this->wire()->config;
-    return $config->versionUrl(str_replace($config->paths->root, $config->urls->root, Paths::normalizeSeparators($file)));
+    $file = Paths::normalizeSeparators($file);
+    $url = str_replace($config->paths->root, $config->urls->root, $file);
+    if ($this->versionFilenames && is_file($file)) {
+      return preg_replace('/\.(css|js)$/', '.' . filemtime($file) . '.$1', $url);
+    }
+    return $config->versionUrl($url);
   }
 
   /**
@@ -268,6 +275,18 @@ class AdminTweaks extends WireData implements Module, ConfigurableModule
       }
       $folders[$folder]->addOption($key, $label);
     }
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'versionFilenames',
+      'label' => $this->_('Version CSS and JS in the filename'),
+      'icon' => 'refresh',
+      'checkboxLabel' => $this->_('Put each file\'s modification time in its name (Name.1792537113.js) instead of adding ?v='),
+      'description' => $this->_('For a CDN that ignores query strings, which would otherwise keep serving the old files after an update.'),
+      'notes' => $this->_('Needs this rule in the site\'s .htaccess, before ProcessWire\'s own rewrite rules, or every tweak\'s CSS and JS returns 404:') . "\n`RewriteRule ^(.+)\\.(\\d{10,})\\.(js|css)$ $1.$3 [L]`",
+      'checked' => $this->versionFilenames ? 'checked' : '',
+      'collapsed' => Inputfield::collapsedBlank,
+    ]);
 
     if (is_dir($this->wire()->config->paths->templates . self::legacyModule)) {
       $inputfields->add([

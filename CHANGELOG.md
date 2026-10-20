@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- A setting puts each CSS and JS file's modification time in its name (`Name.1792537113.js`) instead of `?v=`, for CDNs that ignore query strings. It needs a rewrite rule in `.htaccess`, given in the setting and the README.
+
 ## 1.0.0
 
 First release, from RockAdminTweaks 1.13.1 with 13 of its 21 tweaks.
