@@ -12,7 +12,10 @@
     // one button, moved into whichever checkboxes list the pointer is over
     var button = document.createElement('li');
     button.id = 'checkAllCheckboxes';
-    button.innerHTML = '<i class="fa fa-check"></i>';
+    // built as elements rather than innerHTML, which a Trusted Types policy would refuse
+    var icon = document.createElement('i');
+    icon.className = 'fa fa-check';
+    button.appendChild(icon);
 
     function inputs(ul) {
         return ul.querySelectorAll('input[type="checkbox"]');

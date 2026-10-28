@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- CheckAllCheckboxes builds its button's icon as an element instead of setting `innerHTML`, so it works under a Content-Security-Policy that requires Trusted Types (`require-trusted-types-for 'script'`).
+
 ## 1.2.1
 
 - `Tweak::enable()` runs once when a tweak is turned on, in the settings or on install. ColumnBreak creates its `aos_column_break` field there, instead of on whichever admin request came first after the tweak was turned on.
