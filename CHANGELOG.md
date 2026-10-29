@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- New tweak, PageEdit › FloatingSave, based on [FloatingPageSave](https://github.com/dlzi/FloatingPageSave) by Daniel Zilli: once the page editor's header scrolls away, its Save button (ProcessWire's copy, with its Save + Exit/View menu) is pinned to the top right of the window, centered in the sticky tab bar. It moves the existing button rather than adding another, and works over a full-width form, where there's no margin beside it.
+
 ## 1.2.3
 
 - AsmSearchBox: the open list shows above the fields below it. The admin theme puts each field's content at `z-index: 2`, so later fields covered it; the field holding the open list is raised, as the theme does for selectize.

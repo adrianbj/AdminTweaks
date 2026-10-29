@@ -20,6 +20,7 @@ Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernh
 | Modules › CollapseInfo | Collapses a module's info section |
 | Modules › UpgradesRefresh | Upgrades links check for new versions every time |
 | PageEdit › EditFieldLinks | A link to edit each field, shown on hover, for superusers |
+| PageEdit › FloatingSave | Keeps the header's Save button in view while scrolling: pinned to the top right, in the tab bar |
 | PageEdit › PrevNextPage | Links to edit the previous and next sibling |
 | PageList › NonSuperuserTrash | A Trash action in the page list for users who aren't superusers |
 | PageList › TemplateLink | The template's name, linked to its settings, in the page list actions, for superusers |

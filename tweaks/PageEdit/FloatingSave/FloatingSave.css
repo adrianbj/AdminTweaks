@@ -1,0 +1,5 @@
+/* above the sticky tab bar (z-index 5), below the masthead's menus */
+#pw-content-head-buttons.FloatingSave-pinned {
+  position: fixed;
+  z-index: 10;
+}
