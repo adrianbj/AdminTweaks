@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3
+
+- AsmSearchBox: the open list shows above the fields below it. The admin theme puts each field's content at `z-index: 2`, so later fields covered it; the field holding the open list is raised, as the theme does for selectize.
+- AsmSearchBox: clicking the search box after choosing an option reopens the list. It opened only on focus, and the box keeps focus after a choice.
+
 ## 1.2.2
 
 - CheckAllCheckboxes builds its button's icon as an element instead of setting `innerHTML`, so it works under a Content-Security-Policy that requires Trusted Types (`require-trusted-types-for 'script'`).

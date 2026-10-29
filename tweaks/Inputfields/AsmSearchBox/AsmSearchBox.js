@@ -115,6 +115,10 @@ function initAsmSelectBox(inputfieldId) {
   }
 
   input.addEventListener('focus', render);
+  // the input keeps focus after a choice, so a click on it has to reopen the list
+  input.addEventListener('click', function () {
+    if (list.hidden) render();
+  });
   input.addEventListener('input', render);
   input.addEventListener('blur', close);
 

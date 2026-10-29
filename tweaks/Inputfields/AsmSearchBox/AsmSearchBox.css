@@ -6,6 +6,12 @@
   max-width: 640px;
 }
 
+/* the admin theme puts each field's content at z-index 2, so later fields would cover the open
+   list; raise its field (and any field it's nested in) as the theme does for selectize */
+.Inputfield:has(.AsmSearchBox-list:not([hidden])) {
+  z-index: 3;
+}
+
 .AsmSearchBox-input {
   width: 100%;
 }
