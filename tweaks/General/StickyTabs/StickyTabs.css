@@ -1,0 +1,16 @@
+/* --StickyTabs-top is the height of the masthead when the theme keeps it in view, set by StickyTabs.js */
+ul.WireTabs.uk-tab {
+  position: sticky;
+  top: var(--StickyTabs-top, 0);
+  z-index: 5;
+  /* lift the bar 1px (render only, doesn't move the field box) so its bottom edge clears the
+     top border of the fieldset below it */
+  transform: translateY(-1px);
+  background: var(--pw-main-background, #fff);
+  /* a 1px page-background mask on the top and sides (not the bottom) hides borders of the
+     elements scrolling behind the bar's edges */
+  box-shadow:
+    -1px 0 0 0 var(--pw-main-background, #fff),
+    1px 0 0 0 var(--pw-main-background, #fff),
+    0 -1px 0 0 var(--pw-main-background, #fff);
+}

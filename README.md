@@ -11,6 +11,7 @@ Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernh
 | Tweak | What it does |
 |---|---|
 | General › BypassTrash | Delete buttons in the page list and on the page edit Delete tab that skip the trash, for superusers |
+| General › StickyTabs | Tab bars (page edit, templates, fields) stay pinned below the masthead while scrolling, and each tab keeps its own scroll position |
 | Inputfields › AsmSearchBox | A search box in place of AsmSelect's add dropdown |
 | Inputfields › CheckAllCheckboxes | A button to check or uncheck every checkbox in a field |
 | Inputfields › ColumnBreak | An `aos_column_break` field that splits the page editor into two resizable columns |
@@ -20,7 +21,7 @@ Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernh
 | Modules › CollapseInfo | Collapses a module's info section |
 | Modules › UpgradesRefresh | Upgrades links check for new versions every time |
 | PageEdit › EditFieldLinks | A link to edit each field, shown on hover, for superusers |
-| PageEdit › FloatingSave | Keeps the header's Save button in view while scrolling: pinned to the top right, in the tab bar |
+| PageEdit › FloatingSave | Keeps the header's Save button in view while scrolling, pinned to the top right (in the tab bar, with StickyTabs) |
 | PageEdit › PrevNextPage | Links to edit the previous and next sibling |
 | PageList › NonSuperuserTrash | A Trash action in the page list for users who aren't superusers |
 | PageList › TemplateLink | The template's name, linked to its settings, in the page list actions, for superusers |

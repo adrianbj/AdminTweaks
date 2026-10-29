@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+- New tweak, General › StickyTabs: tab bars (page edit, templates, fields, and any other WireTabs) stay pinned below the masthead while scrolling, and each tab keeps its own scroll position; switching tabs with the bar pinned keeps it pinned. The bar sits below the masthead when the theme keeps the masthead in view (Konkat's is sticky), and at the top of the window otherwise. With FloatingSave, the pinned Save button sits in this bar.
+
 ## 1.3.0
 
 - New tweak, PageEdit › FloatingSave, based on [FloatingPageSave](https://github.com/dlzi/FloatingPageSave) by Daniel Zilli: once the page editor's header scrolls away, its Save button (ProcessWire's copy, with its Save + Exit/View menu) is pinned to the top right of the window, centered in the sticky tab bar. It moves the existing button rather than adding another, and works over a full-width form, where there's no margin beside it.
