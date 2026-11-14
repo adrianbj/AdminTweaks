@@ -20,7 +20,8 @@
         return {
             newLabel: own.newLabel || 'New',
             editLabel: own.editLabel || 'View',
-            adminUrl: own.adminUrl || (pw.urls && pw.urls.admin) || '/'
+            adminUrl: own.adminUrl || (pw.urls && pw.urls.admin) || '/',
+            unpublishedNote: own.unpublishedNote || '"{title}" was created but is unpublished, so it can\'t be chosen here. Publish it, then choose it.'
         };
     }
 
@@ -177,27 +178,59 @@
         return $multiple.length ? $multiple : $wrapper.find('select').not('.asmSelect').first();
     }
 
-    /** Choose values in a reloaded option-list field: those chosen before, then the new page */
+    /** A line under the field's "New" link, or none: replaces the one before */
+    function note($wrapper, text) {
+        $wrapper.children('.at-pfel-note').remove();
+        if (!text) return;
+        var p = document.createElement('p');
+        p.className = 'at-pfel-note notes';
+        p.textContent = text;
+        $wrapper.append(p);
+    }
+
+    /**
+     * Choose values in a reloaded option-list field: ids is what was chosen before, then the new
+     * page. The new page may not be among the options (left unpublished, or outside what the
+     * field lists): a single-value field then keeps what was chosen before.
+     */
     function chooseOptions($wrapper, ids, single) {
+        var matching = function ($set, id) {
+            return $set.filter(function () { return this.value === String(id); });
+        };
+        var i;
         if ($wrapper.hasClass('InputfieldCheckboxes') || $wrapper.hasClass('InputfieldRadios')) {
+            var $inputs = $wrapper.find('input[type=radio], input[type=checkbox]');
+            if (single) {
+                for (i = ids.length - 1; i >= 0; i--) {
+                    if (!matching($inputs, ids[i]).length) continue;
+                    $inputs.prop('checked', false);
+                    matching($inputs, ids[i]).prop('checked', true);
+                    break;
+                }
+                return $inputs.first();
+            }
             // The reload brings the saved choices back: only what was chosen here should stay.
-            $wrapper.find('input[type=radio], input[type=checkbox]').prop('checked', false);
-            $.each(ids, function (i, id) {
-                $wrapper.find('input').filter(function () { return this.value === String(id); }).prop('checked', true);
-            });
-            return $wrapper.find('input').first();
+            $inputs.prop('checked', false);
+            $.each(ids, function (n, id) { matching($inputs, id).prop('checked', true); });
+            return $inputs.first();
         }
         var $select = valueSelect($wrapper);
+        var $options = $select.children('option');
         if (single) {
-            $select.val(String(ids[ids.length - 1]));
+            for (i = ids.length - 1; i >= 0; i--) {
+                if (!matching($options, ids[i]).length) continue;
+                $select.val(String(ids[i]));
+                break;
+            }
             return $select;
         }
         // The reload brings the saved choices back: only what was chosen here should stay.
-        $select.children('option').prop('selected', false).removeAttr('selected');
-        // In order, at the end: a sortable select (AsmSelect) lists the chosen ones as they come.
-        $.each(ids, function (i, id) {
-            var $option = $select.children('option').filter(function () { return this.value === String(id); });
-            if ($option.length) $select.append($option.prop('selected', true));
+        $options.prop('selected', false).removeAttr('selected');
+        // A sortable select (AsmSelect) lists the chosen ones as they come: in order, at the end.
+        var sortable = $wrapper.hasClass('InputfieldAsmSelect');
+        $.each(ids, function (n, id) {
+            var $option = matching($options, id).prop('selected', true);
+            if (sortable && $option.length) $select.append($option);
         });
         return $select;
     }
@@ -246,21 +279,24 @@
             single = !$select.prop('multiple');
             $select.children('option:selected').each(function () { if (this.value) chosen.push(this.value); });
         }
-        if (single) chosen = [];
         chosen.push(id);
 
         // On the field itself, so this runs before the document-level handlers that set the
         // reloaded input up (asmSelect, the page list): they then start from these values.
-        $li.one('reloaded', function () {
+        // Only for the reload asked for here: if that never answers, a later one (a repeater
+        // item reopened, say) must not bring these choices back.
+        $li.off('reloaded.atPfel').on('reloaded.atPfel', function (event, source) {
+            if (source !== 'reload') return;
+            $li.off('reloaded.atPfel');
             var $fresh = $li.find('.at-pfel-new, .at-pfel-edit').first();
             if (!$fresh.length) return;
-            if ($fresh.hasClass('InputfieldPageListSelect')) {
-                $fresh.find('.InputfieldPageListSelectData').val(id);
-            } else {
-                var $changed = chooseOptions($fresh, chosen, single);
-                setTimeout(function () { $changed.trigger('change'); }, 150);
-            }
-            setTimeout(function () { init($li); }, 150);
+            var $changed = $fresh.hasClass('InputfieldPageListSelect')
+                ? $fresh.find('.InputfieldPageListSelectData').val(id)
+                : chooseOptions($fresh, chosen, single);
+            setTimeout(function () {
+                $changed.trigger('change');
+                init($li);
+            }, 150);
         });
         $li.trigger('reload');
     }
@@ -298,12 +334,27 @@
         } catch (e) {
             return;
         }
+        // Only a page editor: that is where the add screen leads once the page exists.
+        var path = '';
+        try {
+            path = $modal[0].location.pathname;
+        } catch (e) {
+            return;
+        }
+        if (!/\/edit\/?$/.test(path)) return;
         var id = parseInt($modal.find('#Inputfield_id').val(), 10);
         if (!validId(id)) return;
         var title = $modal.find('#Inputfield_title').val()
             || $modal.find('input[name=title]').val()
             || $modal.find('#Inputfield__pw_page_name').val()
             || String(id);
+        // Left unpublished (its editor still offers Publish), in a field that doesn't take
+        // unpublished pages: saving would drop it, so it stays out, with a line saying why.
+        if ($modal.find('#submit_publish').length && $wrapper.attr('data-pfel-unpub') !== '1') {
+            note($wrapper, settings().unpublishedNote.replace('{title}', title));
+            return;
+        }
+        note($wrapper, '');
         addNew($wrapper, { id: id, title: title });
     });
 

@@ -12,6 +12,10 @@
     margin-right: 0.25em;
 }
 
+.at-pfel-note {
+    margin: 4px;
+}
+
 /* A modal opened from inside a modal: the outer dialog fills the window while the inner is open. */
 .at-pfel-nested {
     position: fixed !important;

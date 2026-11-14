@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.2
+
+- PageFieldEditLinks: a single select or radios field keeps its choice when the page made with "New" isn't among its options, as when the page was left unpublished. The field was left with nothing chosen, and saving would have emptied it.
+- PageFieldEditLinks: a page made with "New" and left unpublished is no longer put into a field that doesn't allow unpublished pages. ProcessWire drops such a page when the page being edited is saved, and empties a single-value field without saying so; the field now stays as it was, with a line under the "New" link saying the page was created and needs publishing before it can be chosen. A field that allows unpublished pages still gets it.
+- PageFieldEditLinks: the "New" link's permission check asks what the add screen will: whether the user may create a page of the field's template under its parent, or, with only a template set, has page-create for that template (it asked for page-add, the right to add children). A field's single template is also found when it is set under "template_ids".
+- PageFieldEditLinks: only a page editor left open in the "New" modal counts as the page created, and the choices to put back after the field reloads are used only for that reload, so a reload that never answers can't bring them back later.
+- PageFieldEditLinks: choosing a new page in a single page list select triggers the field's change event, and a plain multiple select keeps its options in order.
+
 ## 1.5.1
 
 - PageFieldEditLinks: the "New" link on a sortable multiple select (AsmSelect) keeps the pages already chosen. It left only the new page selected, having read asmSelect's own add dropdown as the field's value. A page removed from the field before using "New" also stays removed: the field reloads with its saved choices, and those are now replaced by what was chosen in the editor, for multiple selects and checkboxes alike.

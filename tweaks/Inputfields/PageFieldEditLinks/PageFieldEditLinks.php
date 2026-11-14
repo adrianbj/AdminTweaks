@@ -48,10 +48,13 @@ class PageFieldEditLinks extends Tweak
         // On every admin page, as AdminModalception's were: a marked field can arrive later by
         // ajax (a repeater item), and a modal opened inside a modal needs the script in both.
         $this->wire()->modules->get('JqueryUI')->use('modal');
+        // The JS inserts these as text, and translated text comes entity-encoded.
+        $text = fn(string $translated): string => html_entity_decode($translated, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $this->wire()->config->js('AdminTweaksPageFieldEditLinks', [
-            'newLabel' => $this->_('New'),
-            'editLabel' => $this->_('View'),
+            'newLabel' => $text($this->_('New')),
+            'editLabel' => $text($this->_('View')),
             'adminUrl' => $this->wire()->config->urls->admin,
+            'unpublishedNote' => $text($this->_('"{title}" was created but is unpublished, so it can\'t be chosen here. Publish it, then choose it.')),
         ]);
         $this->loadJS();
         $this->loadCSS();
@@ -121,13 +124,22 @@ class PageFieldEditLinks extends Tweak
      */
     public function canAddNew(InputfieldPage $inputfield): bool
     {
+        $pages = $this->wire()->pages;
         $parentId = (int) ($inputfield->newPageParent ?: $inputfield->parent_id);
+        $templateId = $this->templateId($inputfield);
+        $template = $templateId ? $this->wire()->templates->get($templateId) : null;
         if ($parentId) {
-            $parent = $this->wire()->pages->get($parentId);
-            return $parent->id && $parent->addable();
+            $parent = $pages->get($parentId);
+            if (!$parent->id) return false;
+            if (!$template) return $parent->addable();
+            // As core's own "create new" input asks: a page of that template, under that parent.
+            $test = $pages->newPage($template);
+            $test->parent = $parent;
+            $test->id = -1; // keeps the permission check from failing on an unsaved page
+            return $parent->addable($test);
         }
-        $template = $this->templateId($inputfield) ? $this->wire()->templates->get($this->templateId($inputfield)) : null;
-        return $template && $this->wire()->user->hasPermission('page-add', $template);
+        // Only a template: whether this user may create pages that use it.
+        return $template && $this->wire()->user->hasPermission('page-create', $template);
     }
 
     /**
@@ -146,6 +158,9 @@ class PageFieldEditLinks extends Tweak
         $attrs = $new
             ? "data-pfel-parent='" . (int) ($inputfield->newPageParent ?: $inputfield->parent_id) . "' data-pfel-template='" . $this->templateId($inputfield) . "' "
             : '';
+        // On save an unpublished page is dropped from a field that doesn't allow them (and a
+        // single-value field emptied), so the JS only adds one where it would be kept.
+        if ($new && $inputfield->getSetting('allowUnpub')) $attrs .= "data-pfel-unpub='1' ";
         // Only the outer element: the inputfield it delegates to builds that, so its classes
         // can't be added before it renders.
         $out = preg_replace("/^(\\s*)<div class='/", "$1<div {$attrs}class='$classes", (string) $event->return, 1, $count);
@@ -172,9 +187,9 @@ class PageFieldEditLinks extends Tweak
     /** The one template new pages would use, or 0 when the field allows several or none */
     protected function templateId(InputfieldPage $inputfield): int
     {
-        $id = $inputfield->template_id;
-        if (is_array($id)) $id = count($id) === 1 ? reset($id) : 0;
-        return (int) $id;
+        // template_id and template_ids together
+        $ids = array_values(array_filter(array_map('intval', (array) $inputfield->getTemplateIDs())));
+        return count($ids) === 1 ? $ids[0] : 0;
     }
 
 }
