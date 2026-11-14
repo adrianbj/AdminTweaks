@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+- PageFieldEditLinks: the "New" link on a sortable multiple select (AsmSelect) keeps the pages already chosen. It left only the new page selected, having read asmSelect's own add dropdown as the field's value. A page removed from the field before using "New" also stays removed: the field reloads with its saved choices, and those are now replaced by what was chosen in the editor, for multiple selects and checkboxes alike.
+
 ## 1.5.0
 
 - New tweak, Inputfields › PageFieldEditLinks, based on [AdminPageFieldEditLinks](https://github.com/thetuningspoon/AdminPageFieldEditLinks) and AdminModalception by Mike Spooner and macrura: edit links on the pages selected in a Page field, opening the page editor in a modal, and a "New" link that creates a page in a modal and adds it to the field. Both are turned on per Page field, on its Input tab, and a modal opened from inside a modal fills the window. It reads AdminPageFieldEditLinks' field settings (`editLinks`, `newPageLink`, `newPageParent`), so fields set up for that module keep working, and it does nothing until that module is uninstalled. The links are built in the page editor, and a new page's id and title are read from the modal it was created in, so the tweak needs no endpoint of its own. The "New" link only shows to someone who may add a page under the field's parent.

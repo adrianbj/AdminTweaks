@@ -168,20 +168,32 @@
         $wrapper.append(span);
     }
 
+    /**
+     * The select that holds a field's value. asmSelect adds a dropdown of its own before it,
+     * so the multiple one is looked for first.
+     */
+    function valueSelect($wrapper) {
+        var $multiple = $wrapper.find('select[multiple]').first();
+        return $multiple.length ? $multiple : $wrapper.find('select').not('.asmSelect').first();
+    }
+
     /** Choose values in a reloaded option-list field: those chosen before, then the new page */
     function chooseOptions($wrapper, ids, single) {
         if ($wrapper.hasClass('InputfieldCheckboxes') || $wrapper.hasClass('InputfieldRadios')) {
-            if (single) $wrapper.find('input[type=radio]').prop('checked', false);
+            // The reload brings the saved choices back: only what was chosen here should stay.
+            $wrapper.find('input[type=radio], input[type=checkbox]').prop('checked', false);
             $.each(ids, function (i, id) {
                 $wrapper.find('input').filter(function () { return this.value === String(id); }).prop('checked', true);
             });
             return $wrapper.find('input').first();
         }
-        var $select = $wrapper.find('select').first();
+        var $select = valueSelect($wrapper);
         if (single) {
             $select.val(String(ids[ids.length - 1]));
             return $select;
         }
+        // The reload brings the saved choices back: only what was chosen here should stay.
+        $select.children('option').prop('selected', false).removeAttr('selected');
         // In order, at the end: a sortable select (AsmSelect) lists the chosen ones as they come.
         $.each(ids, function (i, id) {
             var $option = $select.children('option').filter(function () { return this.value === String(id); });
@@ -230,7 +242,7 @@
             single = $wrapper.hasClass('InputfieldRadios');
             $wrapper.find('input:checked').each(function () { chosen.push(this.value); });
         } else {
-            var $select = $wrapper.find('select').first();
+            var $select = valueSelect($wrapper);
             single = !$select.prop('multiple');
             $select.children('option:selected').each(function () { if (this.value) chosen.push(this.value); });
         }
