@@ -17,6 +17,7 @@ Based on [RockAdminTweaks](https://github.com/baumrock/RockAdminTweaks) by Bernh
 | Inputfields › ColumnBreak | An `aos_column_break` field that splits the page editor into two resizable columns |
 | Inputfields › CopyFieldNames | Shift-click a field's label to copy its name, for superusers |
 | Inputfields › ImageDownload | A download button on images |
+| Inputfields › PageFieldEditLinks | Edit links on pages selected in a Page field, and a link to create a new page for it in a modal (replaces AdminPageFieldEditLinks) |
 | Inputfields › PageListSelectUnselectRestore | Clear and restore buttons on single page selects |
 | Modules › CollapseInfo | Collapses a module's info section |
 | Modules › UpgradesRefresh | Upgrades links check for new versions every time |

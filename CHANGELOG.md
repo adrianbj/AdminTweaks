@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0
+
+- New tweak, Inputfields › PageFieldEditLinks, based on [AdminPageFieldEditLinks](https://github.com/thetuningspoon/AdminPageFieldEditLinks) and AdminModalception by Mike Spooner and macrura: edit links on the pages selected in a Page field, opening the page editor in a modal, and a "New" link that creates a page in a modal and adds it to the field. Both are turned on per Page field, on its Input tab, and a modal opened from inside a modal fills the window. It reads AdminPageFieldEditLinks' field settings (`editLinks`, `newPageLink`, `newPageParent`), so fields set up for that module keep working, and it does nothing until that module is uninstalled. The links are built in the page editor, and a new page's id and title are read from the modal it was created in, so the tweak needs no endpoint of its own. The "New" link only shows to someone who may add a page under the field's parent.
+
 ## 1.4.0
 
 - New tweak, General › StickyTabs: tab bars (page edit, templates, fields, and any other WireTabs) stay pinned below the masthead while scrolling, and each tab keeps its own scroll position; switching tabs with the bar pinned keeps it pinned. The bar sits below the masthead when the theme keeps the masthead in view (Konkat's is sticky), and at the top of the window otherwise. With FloatingSave, the pinned Save button sits in this bar.

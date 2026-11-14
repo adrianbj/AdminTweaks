@@ -1,0 +1,32 @@
+.at-pfel-link-wrap {
+    display: inline-block;
+    margin: 4px;
+}
+
+.at-pfel-icon {
+    margin-left: 0.5em;
+}
+
+.at-pfel-link-wrap .at-pfel-icon {
+    margin-left: 0;
+    margin-right: 0.25em;
+}
+
+/* A modal opened from inside a modal: the outer dialog fills the window while the inner is open. */
+.at-pfel-nested {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.at-pfel-nested > .pw-modal-window {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.at-pfel-nested > .ui-dialog-titlebar,
+.at-pfel-nested > .ui-dialog-buttonpane {
+    display: none !important;
+}
